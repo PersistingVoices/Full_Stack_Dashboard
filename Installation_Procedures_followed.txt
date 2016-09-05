@@ -1,0 +1,14 @@
+# Installation procedures followed for Django
+- checked for Python vir environment, to see if it could be installed within that. 
+	Did not proceed
+- pip3 can be found in C:/Python
+- installed Django
+- made symbolic link frm django-admin.py (found in site-packages of python install folder)
+	to PATH (C:/Python/Django_files)
+- Added path of the si-package file to the PATH variable
+- installed sqlite3 commandline interface
+
+22-Aug
+- Installed Django, Pyexcel, and django-excel, along with pyexcel-xls support
+- git pulled django-excel.git, pip install requirements.txt, test_requirements.txt
+-pip3 install django-adapters
