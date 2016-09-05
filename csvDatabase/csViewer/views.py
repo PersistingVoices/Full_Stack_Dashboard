@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Client
@@ -10,6 +11,7 @@ def index(request):
 	output = ', '.join([client.prj_manager for client in client_list])
 	return HttpResponse(output)
 
+@transaction.atomic
 def csView(request):
 	filename = 'C:/Python/Django_Files/data.csv'
 	with open(filename) as csvfile:
