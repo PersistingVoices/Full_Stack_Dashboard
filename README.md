@@ -1,4 +1,4 @@
-# Full_Stack_Dashboard
+# Full Stack Dashboard
 
 ## For Win
 	Keep in mind, that when you pull this, you need to link django-admin.py into 
