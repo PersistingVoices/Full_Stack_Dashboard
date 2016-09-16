@@ -1,0 +1,9 @@
+{% if all_prj_names %}
+	<ul>
+		{% for objects in all_prj_names %}
+			<li><a href="/csViewer/{{ objects.prj_name }}/">{{ objects.prj_name }}</a></li>
+		{% endfor %}
+	</ul>
+{% else %}	
+	<p>No polls are available</p>
+{% endif %}

@@ -1,35 +1,33 @@
 from django.db import transaction
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Client
+from .scripts import upload_data, clean_data
+from .models import Pinfo 
+
 import csv
 
 # Create your views here.
 
 def index(request):
-	client_list = Client.objects.order_by('prj_name')[:]
-	output = ', '.join([client.prj_manager for client in client_list])
-	return HttpResponse(output)
+	all_prj_names = Pinfo.objects.all()[:100]
+	
+	context = {'all_prj_names': all_prj_names}
+	return render(request, 'csViewer/index.html',context)
 
-@transaction.atomic
-def csView(request):
-	filename = 'C:/Python/Django_Files/data.csv'
-	with open(filename) as csvfile:
-		csvreader = csv.reader(csvfile)
-		header = csvreader.__next__()
+# @transaction.atomic
+# def csView(request):
+# 	file_root = "C:/Python/Django_Files/Data/"
+# 	file_name = "full_data.csv"
+# 	file = file_root + file_name
 
-		for line in csvreader:
-			items = zip(header, line)
-			item = {}
-			
-			for (name, value) in items:
-				item[name] = value
-				if (len(item)==4):
-					client = Client(
-						prj_name = item['Project Name'],
-						prj_manager = item['Project Manager'],
-						prj_number = item['Project No'],
-						app_centre = item['Application Centre'])
-					client.save()
-				
-	return HttpResponse('Uploaded')
+# 	new_file_path = clean_data(file)
+# 	print(HttpResponse(new_file_path))
+
+# 	ok = "FALSE"
+# 	ok = upload_data(new_file_path)
+# 	if ok == "FALSE":
+# 		return HttpResponse('Not Uploaded')
+# 	else:
+# 		return HttpResponse(ok)
+
+
