@@ -1,156 +1,170 @@
-from django.db import transaction
-from django.shortcuts import render
-from django.http import HttpResponse
-from .models import Pinfo, Reporting, Backlog, PS1, PS4, Actuals, Payment, Slippages, CPO 
+# from django.db import transaction
+# from django.shortcuts import render
+# from django.http import HttpResponse
+# from .models import Pinfo, Reporting, Backlog, PS1, PS4, Actuals, Payment, Slippages, CPO 
 
-import csv
-import os
-
-# filename refers to csv file
-# model_name refers to particular model 
-# fields are strings that are to be placed into the assignment function
-# field nos are the number of fields that are present inside fields
+import csv, os
+import itertools as it 
 
 # make a dictionary relating the field names of models with the actual column name
 
-root = "C:/Python/Django_Files/Data/"
+root = "c:/python/django_files/data/"
 filename = "full_data.csv"
+filename2 = "cost_forecasting.csv"
+name = 'cleaned_data.csv'
 
 file = root + filename
+file2 = root + filename2
+new_filename = root + name
 
+
+##
 def has_numbers(inputstr):
-	return any(char.isdigit() for char in inputstr)
+	if isinstance(inputstr, str):
+		return any(char.isdigit() for char in inputstr)
+	else:
+		return 0
 
-def clean_data(file):
-	ok = "FALSE"
 
-	with open(file) as csvfile: 
+##
+def assign(key, dictionary):
+	if key in dictionary.keys():
+		return dictionary[key]
+	else:
+		return 0
+
+##
+def find_no_of_projects_for_each_pm(filename):
+	prj_names = []
+	prj_manager = []
+	unique_prjnames = []
+	unique_prjmanager = []
+	rel = {}
+	prj_nos = {}
+
+	with open(filename) as csvfile:
 		csvreader = csv.reader(csvfile)
-		header = csvreader.__next__()
-
-		file_name = 'Cleaned_Data.csv'
-		new_file = file_root + file_name
-
-		# deletes remakes if file exists, makes if doesnt
-		try:
-			os.remove(new_file)
-			csvfile2 = open(new_file, 'w')
-		except OSError: 
-			csvfile2 = open(new_file, 'w')
-
-		# writer headers into the file
-		header_writer = csv.writer(csvfile2, delimiter=',')
-		header_writer.writerow(header)
-
-		csvwriter = csv.DictWriter(csvfile2, fieldnames=header)
-		
 		for line in csvreader:
-			items = zip(header, line)
+			prj_manager.append(line[2])
+			prj_names.append(line[1])
+			# the project name is related to project manager
+			rel[line[1]] = line[2]
+
+	for i in range(len(prj_names) - 1):
+		for j in range(len(prj_names) - 1): 
+			if prj_manager[i] == prj_manager[j]:
+				if prj_manager[i] in unique_prjmanager:
+					pass
+				else: 
+					unique_prjmanager.append(prj_manager[i])
+
+	for i in unique_prjmanager: 
+		s = 0
+		for j in prj_names:
+			if rel[j] == i:
+				s = s + 1
+		prj_nos[i] = s
+
+	print(prj_nos)
+
+##
+def make_into_clean_data(file1, file2): 
+	# allocate dicts for each compnent of new file
+	prj_backlog = {}
+	prj_q1 = {}
+	prj_q2 = {}
+	prj_q3 = {}
+	prj_q4 = {}
+	
+	with open(file1) as csvfile, open(file2) as csvfile2:
+		# find headers and add them
+		csvfile.seek(0)
+		csvfile2.seek(0)
+
+		csvreader = csv.reader(csvfile)
+		csvreader2 = csv.reader(csvfile2)
+
+		header1 = csvreader.__next__()
+		header2 = csvreader2.__next__()
+		header3 = []
+
+		for i in header2:
+			if i in header1:
+				pass
+			else:
+				header3.append(i)
+				header1.append(i)
+
+		try:
+			os.remove(new_filename)
+			Clean_file = open(new_filename, 'w')
+		except OSError:
+			Clean_file = open(new_filename, 'w')
+
+		header_writer = csv.writer(Clean_file, delimiter=',')
+		header_writer.writerow(header1)
+		csvwriter = csv.DictWriter(Clean_file, fieldnames=header1)
+
+		# make a writer that opens another file
+		# populate dicts from csvfile2
+		for line in csvreader2:
+			prj_backlog[line[0][:-2]] = line[3]
+			prj_q1[line[0][:-2]] = line[4]
+			prj_q2[line[0][:-2]] = line[5]
+			prj_q3[line[0][:-2]] = line[6]
+			prj_q4[line[0][:-2]] = line[7]
+
+		for line in csvreader:
+			line = line + [0,0,0,0,0] # extend line to include new values
+			items = zip(header1, line) # the error lies here, zip goes until the smallest array
 			item = {}
-			
-			for (name, value) in items: 
-				if value == '' or value == "#VALUE!": 
-					value = 0
-				elif "%" in value: 
-					value.strip('%')
-					value = float(value)/100
-				elif name != "Application Centre" and name != "Project Name" and name != "Project Number": 
-					if has_numbers(value) and "K" in value: 
-						value = value.strip("K")
-						value = float(value) * 1000
 
-				item[name] = value
-				
-				if len(item) == 34: 
+			for (name, values) in items:
+				if values == '' or values == "#VALUE!": 
+					values = 0
+				if isinstance(values, str) and "%" in values: 
+					values.strip('%')
+					values = float(value)/100
+				if name != "Application Centre" and name != "Project Name" and name != "Project Number": 
+					if has_numbers(values) and "K" in values:
+						values = values.strip("K")
+						values = float(values) * 1000
+				if name == "Backlog Revenue":
+					values = assign(line[0], prj_backlog)
+					# print(values)
+				if name == "Q1 Sales 16":
+					values = assign(line[0], prj_q1)
+				if name == "Q2 Sales 16":
+					values = assign(line[0], prj_q2)
+				if name == "Q3 Sales 16":
+					values = assign(line[0], prj_q3)
+				if name == "Q4 Sales 16":
+					values = assign(line[0], prj_q4)
+
+				item[name] = values
+				if len(item) == 39:
 					csvwriter.writerow(item)
-		
-		csvfile2.close()
-	return(new_file)
-
-
+##
 def upload_data(filename):
 	ok = "FALSE"
-
 	with open(filename) as csvfile: 
 		csvreader = csv.reader(csvfile)
 		header = csvreader.__next__()
-	
+		
 		for line in csvreader:
 			items = zip(header, line)
 			item = {}
-			
+
 			for (name, value) in items:
 				name = name.strip()
 				item[name] = value
-				if len(item) == 34:
 
+				if len(item) == 34:
 					pinfo = Pinfo(
 						prj_name = item['Project Name'],
 						prj_manager = item['Project Manager'],
 						prj_number = item['Project Number'])
 					pinfo.save()
-				
-					reporting = Reporting(
-						# profit_centre = item['Profit Centre'], 
-						# entity = item['Entity'],
-						# activity = item['Activity'], 
-						# report = item['Report Class Filter'],
-						app_centre = item['Application Centre'])
-					reporting.save()
-				
-		
-					backlog = Backlog(
-						revenue_backlog = item['Revenue Backlog (AED)'], 
-						cost_to_go = item['Cost to Go (AED)'], 
-						backlog_margin = item['Backlog Margin %'])
-					backlog.save()
-				
-		
-					ps1 = PS1(
-						as_sold_revenue = item['As Sold Revenue'], 
-						as_sold_cost = item['As Sold Cost'], 
-						as_sold_margin_cost = item['As Sold Margin Amount'], 
-						ps1_margin_lgm = item['PS1 Margin LGM'])
-					ps1.save()
-				
-		
-					ps4 = PS4(
-						as_sold_revenue = item['As Sold Revenue'], 
-						as_sold_cost = item['As Sold Cost'], 
-						as_sold_margin_cost = item['As Sold Margin Amount'], 
-						ps4_margin_lgm = item['PS4 Margin LGM'])
-					ps4.save()
-				
-		
-					actuals = Actuals(
-						actual_cost = item['Actual Cost OTD'], 
-						recognised_revenue_otd = item['Recognized Revenue OTD'], 
-						invoice_revenue_otd = item['Invoice Revenue OTD'], 
-						actual_cost_otd = item['Actual Cost OTD'],
-						recognised_revenue_ytd = item['Recognized Revenue YTD'], 
-						invoice_revenue_ytd = item['Invoice Revenue YTD'])
-					actuals.save()
-				
-		
-					payment = Payment(
-						cash_in = item['Cash IN'], 
-						excess_billing = item['Excess Billing'], 
-						overdue = item['Unbilled'], 
-						c_minus_i = item['C - I'],
-						i_minus_r = item['I - R'], 
-						c_minus_r_percentage = item['C - R %'])
-					payment.save()
-					
-					# slippage = Slippages(
-					# 	slippage_ps4_minus_ps1 = item['Slippage PS4 - PS1'])
-					# slippage.save()
 
-					# cpo = CPO(
-					# 	merec_catalog = item['MEREC Category'], 
-					# 	rel_score = item['REL Score']
-					# 	)
-						# rel_category = item['REL Category'],)
-						# corporate_database = item['Corporate Database'])
-					# cpo.save()
 		ok = "TRUE"
 	return(ok)
