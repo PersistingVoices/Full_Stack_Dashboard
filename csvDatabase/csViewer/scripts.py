@@ -25,7 +25,6 @@ def has_numbers(inputstr):
 	else:
 		return 0
 
-
 ##
 def assign(key, dictionary):
 	if key in dictionary.keys():
@@ -34,47 +33,9 @@ def assign(key, dictionary):
 		return 0
 
 ##
-def find_no_of_projects_for_each_pm(filename):
-	prj_names = []
-	prj_manager = []
-	unique_prjnames = []
-	unique_prjmanager = []
-	rel = {}
-	prj_nos = {}
-
-	with open(filename) as csvfile:
-		csvreader = csv.reader(csvfile)
-		for line in csvreader:
-			prj_manager.append(line[2])
-			prj_names.append(line[1])
-			# the project name is related to project manager
-			rel[line[1]] = line[2]
-
-	for i in range(len(prj_names) - 1):
-		for j in range(len(prj_names) - 1): 
-			if prj_manager[i] == prj_manager[j]:
-				if prj_manager[i] in unique_prjmanager:
-					pass
-				else: 
-					unique_prjmanager.append(prj_manager[i])
-
-	for i in unique_prjmanager: 
-		s = 0
-		for j in prj_names:
-			if rel[j] == i:
-				s = s + 1
-		prj_nos[i] = s
-
-	print(prj_nos)
-
-##
 def make_into_clean_data(file1, file2): 
 	# allocate dicts for each compnent of new file
-	prj_backlog = {}
-	prj_q1 = {}
-	prj_q2 = {}
-	prj_q3 = {}
-	prj_q4 = {}
+	prj_backlog = {}; prj_q1 = {}; prj_q2 = {}; prj_q3 = {}; prj_q4 = {}
 	
 	with open(file1) as csvfile, open(file2) as csvfile2:
 		# find headers and add them
@@ -159,11 +120,18 @@ def upload_data(filename):
 				name = name.strip()
 				item[name] = value
 
-				if len(item) == 34:
+				if len(item) == 39:
 					pinfo = Pinfo(
-						prj_name = item['Project Name'],
-						prj_manager = item['Project Manager'],
-						prj_number = item['Project Number'])
+						PM = item['PM'],
+						Prj_nos = item['Prj_nos'],
+						PS1 = item['PS1'], 
+						PS4 = item['PS4'], 
+						PS1vsPS4 = item['PS1vsPS4'], 
+						Q1 = item['Q1'], 
+						Q2 = item['Q2'], 
+						Q3 = item['Q3'], 
+						Q4 = item['Q4'], 
+						total = item[''])
 					pinfo.save()
 
 		ok = "TRUE"
