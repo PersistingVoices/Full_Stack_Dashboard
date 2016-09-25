@@ -8,14 +8,15 @@ import itertools as it
 
 # make a dictionary relating the field names of models with the actual column name
 
-root = "c:/python/django_files/data/"
+root1 = "C:/Python/Django_Files/Data/"
+root2 = "/home/shriram/Documents/Python/work/Django/Data/"
 filename = "full_data.csv"
-filename2 = "cost_forecasting.csv"
-name = 'cleaned_data.csv'
+filename2 = "Cost_Forecasting.csv"
+name = 'Cleaned_Data.csv'
 
-file = root + filename
-file2 = root + filename2
-new_filename = root + name
+file1 = root2 + filename
+file2 = root2 + filename2
+new = root2 + name
 
 
 ##
@@ -32,6 +33,8 @@ def assign(key, dictionary):
 	else:
 		return 0
 
+def strip_commas(value):
+	return(value.replace(",", ""))
 ##
 def make_into_clean_data(file1, file2): 
 	# allocate dicts for each compnent of new file
@@ -56,11 +59,12 @@ def make_into_clean_data(file1, file2):
 				header3.append(i)
 				header1.append(i)
 
+
 		try:
-			os.remove(new_filename)
-			Clean_file = open(new_filename, 'w')
+			os.remove(new)
+			Clean_file = open(new, 'w')
 		except OSError:
-			Clean_file = open(new_filename, 'w')
+			Clean_file = open(new, 'w')
 
 		header_writer = csv.writer(Clean_file, delimiter=',')
 		header_writer.writerow(header1)
@@ -69,11 +73,11 @@ def make_into_clean_data(file1, file2):
 		# make a writer that opens another file
 		# populate dicts from csvfile2
 		for line in csvreader2:
-			prj_backlog[line[0][:-2]] = line[3]
-			prj_q1[line[0][:-2]] = line[4]
-			prj_q2[line[0][:-2]] = line[5]
-			prj_q3[line[0][:-2]] = line[6]
-			prj_q4[line[0][:-2]] = line[7]
+			prj_backlog[line[0][:-2]] = strip_commas(line[3])
+			prj_q1[line[0][:-2]] = strip_commas(line[4])
+			prj_q2[line[0][:-2]] = strip_commas(line[5])
+			prj_q3[line[0][:-2]] = strip_commas(line[6])
+			prj_q4[line[0][:-2]] = strip_commas(line[7])
 
 		for line in csvreader:
 			line = line + [0,0,0,0,0] # extend line to include new values
@@ -105,6 +109,9 @@ def make_into_clean_data(file1, file2):
 				item[name] = values
 				if len(item) == 39:
 					csvwriter.writerow(item)
+
+
+# make_into_clean_data(file1,file2)
 ##
 def upload_data(filename):
 	ok = "FALSE"
