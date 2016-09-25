@@ -1,15 +1,6 @@
 import csv
 
-root = "C:/Python/Django_Files/Data/"
-filename = "full_data.csv"
-filename2 = "cost_forecasting.csv"
-name = 'cleaned_data.csv'
-
-file = root + filename
-file2 = root + filename2
-new_filename = root + name
-
-class Tab1():
+class Tab1:
 	## make unique list from list
 	def make_unique(lst):
 		Ulist = []
@@ -22,7 +13,6 @@ class Tab1():
 						Ulist.append(lst[i])
 		return(Ulist)
 
-	## for field 'P_nos'
 	def find_no_of_projects_for_each_pm(filename):
 		P_names = []
 		P_manager = []
@@ -43,7 +33,7 @@ class Tab1():
 		unique_pm = make_unique(P_names)
 
 		# find the number of unique pm's in the original list
-		for i in unique_pm: 
+		for i in unique_pm:
 			s = 0
 			for j in P_names:
 				if rel[j] == i:
@@ -52,38 +42,53 @@ class Tab1():
 
 		return(P_nos)
 
-	## for field 'PS1'
-	def find_sum_of_PS1_for_each_pm(filename):
-		PS1 = [] 
+	@staticmethod
+	def template_for_sigmaX_V_PM(filename, X):
 		pm = []
 		unique_pm = []
-		# use rel for storing the final values
-		# rel contains pm names, and their ps1's
-		rel = {}
-		individual_s = 0
-		s = {}
 
 		with open(filename) as csvfile:
 			csvreader = csv.reader(csvfile)
+			header = csvfile.__next__()
 			for line in csvreader:
-				# store all these names
-				# and make them unique later	
-				
-				pm.append([line[2]])
-
-			# make unique pm list 
+				if len(line) == 39:
+					pm.append(line[2])
 			unique_pm = Tab1.make_unique(pm)
-			
+
 			csvfile.seek(0)
+			header = csvfile.__next__()
+			item = {}
 			for line in csvreader:
 				for i in unique_pm:
-					if i in 
-	## for field 'PS4'
-	## for field 'PS1vsPS4'
-	## for field 'Q1 sales'
-	## for field 'Q2 sales'
-	## for field 'Q3 sales'
-	## for field 'Q4 sales'
-	## for field 'cr'
-	
-Tab1.find_sum_of_PS1_for_each_pm(new_filename)
+					if len(line) == 39:
+						if i == line[2]:
+							if i in item:
+								plc = int(item[i])
+								item[i] = plc + int(line[X])
+							else:
+								item[i] = int(line[X])
+			return(item)
+
+root1 = "C:/Python/Django_Files/Data/"
+root2 = "/home/shriram/Documents/Python/work/Django/Data/"
+filename = "full_data.csv"
+filename2 = "cost_forecasting.csv"
+name = 'Cleaned_Data.csv'
+
+file1 = root2 + filename
+file2 = root2 + filename2
+new = root2 + name
+
+T = Tab1()
+PS1 = T.template_for_sigmaX_V_PM(new, 7)
+print(PS1)
+PS2 = T.template_for_sigmaX_V_PM(new, 8)
+print(PS2)
+
+## for field 'PS4'
+## for field 'PS1vsPS4'
+## for field 'Q1 sales'
+## for field 'Q2 sales'
+## for field 'Q3 sales'
+## for field 'Q4 sales'
+## for field 'cr'
