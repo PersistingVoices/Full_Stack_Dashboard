@@ -1,33 +1,61 @@
 from django.db import transaction
 from django.shortcuts import render
 from django.http import HttpResponse
-from .scripts import upload_data, clean_data
-from .models import Pinfo 
+from .models import Table1
+from .dataScripts import clean_data
+from .Classes import Classy
 
-import csv
+## root1 = "C:/Python/Django_Files/Data/"
+root = "/home/shriram/Documents/Python/work/ENV3/Django/Data/"
+src_file1 = "full_data.csv"
+src_file2 = "Cost_Forecasting.csv"
+dest_file = 'Cleaned_Data.csv'
 
+# file1 for full data
+file1 = root + src_file1
+# file2 to include cost forcasting 
+file2 = root + src_file2
+# new clean file name
+new = root + dest_file
 # Create your views here.
 
+@transaction.atomic
+def upload_data(PM, P_nos, PS1, PS4, PS1vsPS4, 
+				Q1, Q2, Q3, Q4, crp, cr):
+	ok = "FALSE"
+	for i in PM:	
+		table1 = Table1(
+			PM = i,
+			P_nos = P_nos[i],
+			PS1 = PS1[i], 
+			PS4 = PS4[i], 
+			PS1vsPS4 = PS1vsPS4[i], 
+			Q1 = Q1[i], 
+			Q2 = Q2[i], 
+			Q3 = Q3[i], 
+			Q4 = Q4[i], 
+			crp = crp[i],
+			cr = cr[i]
+			)
+		table1.save()
+		ok = "TRUE"
+	return ok
+
+#@transaction.atomic
 def index(request):
-	all_prj_names = Pinfo.objects.all()[:100]
+	ok = "False"
+	clean_data(file1, file2, new)
+	C = Classy()
 	
-	context = {'all_prj_names': all_prj_names}
-	return render(request, 'csViewer/index.html',context)
+	(unique_pm, 
+	P_nos, PS1,
+	PS4, PS1vsPS4,
+	Q1_sales, Q2_sales,
+	Q3_sales, Q4_sales,
+	crp, cr) = C.before_upload(new)
 
-# @transaction.atomic
-# def csView(request):
-# 	file_root = "C:/Python/Django_Files/Data/"
-# 	file_name = "full_data.csv"
-# 	file = file_root + file_name
-
-# 	new_file_path = clean_data(file)
-# 	print(HttpResponse(new_file_path))
-
-# 	ok = "FALSE"
-# 	ok = upload_data(new_file_path)
-# 	if ok == "FALSE":
-# 		return HttpResponse('Not Uploaded')
-# 	else:
-# 		return HttpResponse(ok)
+	upload_data(unique_pm, P_nos, PS1, PS4, PS1vsPS4, 
+				Q1_sales, Q2_sales, Q3_sales, Q4_sales, crp, cr)
+	return(HttpResponse("Done!, Check DB"))
 
 

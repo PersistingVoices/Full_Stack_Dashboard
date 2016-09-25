@@ -1,22 +1,8 @@
-# from django.db import transaction
-# from django.shortcuts import render
-# from django.http import HttpResponse
-# from .models import Pinfo, Reporting, Backlog, PS1, PS4, Actuals, Payment, Slippages, CPO 
 
 import csv, os
-import itertools as it 
 
 # make a dictionary relating the field names of models with the actual column name
 
-root1 = "C:/Python/Django_Files/Data/"
-root2 = "/home/shriram/Documents/Python/work/Django/Data/"
-filename = "full_data.csv"
-filename2 = "Cost_Forecasting.csv"
-name = 'Cleaned_Data.csv'
-
-file1 = root2 + filename
-file2 = root2 + filename2
-new = root2 + name
 
 
 ##
@@ -31,12 +17,15 @@ def assign(key, dictionary):
 	if key in dictionary.keys():
 		return dictionary[key]
 	else:
-		return 0
+		return '0'
 
 def strip_commas(value):
-	return(value.replace(",", ""))
+	v = value.replace(",", "")
+	if v == "":
+		v = 0
+	return(v)
 ##
-def make_into_clean_data(file1, file2): 
+def clean_data(file1, file2, new): 
 	# allocate dicts for each compnent of new file
 	prj_backlog = {}; prj_q1 = {}; prj_q2 = {}; prj_q3 = {}; prj_q4 = {}
 	
@@ -78,6 +67,7 @@ def make_into_clean_data(file1, file2):
 			prj_q2[line[0][:-2]] = strip_commas(line[5])
 			prj_q3[line[0][:-2]] = strip_commas(line[6])
 			prj_q4[line[0][:-2]] = strip_commas(line[7])
+		# print(prj_q4)
 
 		for line in csvreader:
 			line = line + [0,0,0,0,0] # extend line to include new values
@@ -109,37 +99,3 @@ def make_into_clean_data(file1, file2):
 				item[name] = values
 				if len(item) == 39:
 					csvwriter.writerow(item)
-
-
-# make_into_clean_data(file1,file2)
-##
-def upload_data(filename):
-	ok = "FALSE"
-	with open(filename) as csvfile: 
-		csvreader = csv.reader(csvfile)
-		header = csvreader.__next__()
-		
-		for line in csvreader:
-			items = zip(header, line)
-			item = {}
-
-			for (name, value) in items:
-				name = name.strip()
-				item[name] = value
-
-				if len(item) == 39:
-					pinfo = Pinfo(
-						PM = item['PM'],
-						Prj_nos = item['Prj_nos'],
-						PS1 = item['PS1'], 
-						PS4 = item['PS4'], 
-						PS1vsPS4 = item['PS1vsPS4'], 
-						Q1 = item['Q1'], 
-						Q2 = item['Q2'], 
-						Q3 = item['Q3'], 
-						Q4 = item['Q4'], 
-						total = item[''])
-					pinfo.save()
-
-		ok = "TRUE"
-	return(ok)
