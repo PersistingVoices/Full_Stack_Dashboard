@@ -3,8 +3,6 @@ import csv, os
 
 # make a dictionary relating the field names of models with the actual column name
 
-
-
 ##
 def has_numbers(inputstr):
 	if isinstance(inputstr, str):

@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Table1
 from .dataScripts import clean_data
 from .Classes import Classy
@@ -41,21 +41,34 @@ def upload_data(PM, P_nos, PS1, PS4, PS1vsPS4,
 		ok = "TRUE"
 	return ok
 
-#@transaction.atomic
+# returns specif rows ad columns as JSON
+def get_specific(q, row='row'):
+	P = []
+	for i in range(len(q)):
+		T = q[i]
+		a = (T.PM, T.PS1)
+		P.append(a)
+	return(JsonResponse(P, safe=False))
+
 def index(request):
 	ok = "False"
 	clean_data(file1, file2, new)
 	C = Classy()
 	
-	(unique_pm, 
+	(PM, 
 	P_nos, PS1,
 	PS4, PS1vsPS4,
 	Q1_sales, Q2_sales,
 	Q3_sales, Q4_sales,
 	crp, cr) = C.before_upload(new)
 
-	upload_data(unique_pm, P_nos, PS1, PS4, PS1vsPS4, 
-				Q1_sales, Q2_sales, Q3_sales, Q4_sales, crp, cr)
-	return(HttpResponse("Done!, Check DB"))
+	upload_data(PM, P_nos, PS1, PS4, PS1vsPS4, 
+				Q1_sales, Q2_sales, Q3_sales, Q4_sales, 
+				crp, cr)
 
-
+	field = "PM"
+	
+	q = Table1.objects.all()
+	q = list(q)
+	P = get_specific(q)
+	return(P)
