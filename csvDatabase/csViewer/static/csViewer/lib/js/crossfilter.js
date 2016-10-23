@@ -13,7 +13,7 @@ function crossfilter() {
       n = 0, // the number of records; data.length
       m = 0, // a bit mask representing which dimensions are in use
       M = 8, // number of dimensions that can fit in `filters`
-      filters = crossfilter_array8(0), // M bits per record; 1 is filtered out
+      filters = crossfilter_array(0), // M bits per record; 1 is filtered out
       filterListeners = [], // when the filters change
       dataListeners = [], // when data is added
       removeDataListeners = []; // when data is removed

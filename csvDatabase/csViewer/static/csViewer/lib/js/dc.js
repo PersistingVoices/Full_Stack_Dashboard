@@ -2389,10 +2389,10 @@ dc.colorChart = function(_chart) {
     /**
     #### .colors([colorScale or colorArray])
     Retrieve current color scale or set a new color scale. This function accepts both d3 color scale and arbitrary color
-    array. By default d3.scale.category20c() is used.
+    array. By default d3.schemeCategory20cc() is used.
     ```js
     // color scale
-    chart.colors(d3.scale.category20b());
+    chart.colors(d3.schemeCategory20cb());
     // arbitrary color array
     chart.colors(["#a60000","#ff0000", "#ff4040","#ff7373","#67e667","#39e639","#00cc00"]);
     ```

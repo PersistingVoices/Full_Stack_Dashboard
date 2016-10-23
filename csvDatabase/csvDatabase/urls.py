@@ -17,7 +17,6 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 urlpatterns = [
-	url(r'^csViewer/', include('csViewer.urls')),
     url(r'^admin/', admin.site.urls),
  	url(r'^index/', include('csViewer.urls')),
 ]
