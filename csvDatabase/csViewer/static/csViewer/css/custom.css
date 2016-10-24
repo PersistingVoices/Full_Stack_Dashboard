@@ -1,3 +1,13 @@
 @import url('../lib/css/keen-dashboards.css');
 @import url('../lib/css/dc.css');
 @import url('../lib/css/bootstrap.min.css');
+@import url('../lib/css/d3fc.css');
+
+.tick text { 
+	font-size: 13px;
+}
+
+#PM .x.axis text{
+	text-anchor: end !important;
+	transform: rotate(-45deg);
+}

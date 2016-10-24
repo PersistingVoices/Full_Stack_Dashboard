@@ -5,11 +5,12 @@
 </head>
 
 <body>
-	<div id="PM-Chart"/>
+	<div id="PM"/>
 
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8" ></script>
 	{# d3 must come before all #}
 	<script src="{% static "csViewer/lib/js/d3.js"%}" type="text/javascript" charset="utf-8"></script>
+	<script src="{% static "csViewer/lib/js/d3fc.bundle.min.js"%}" type="text/javascript" charset="utf-8"></script>
 	<script src="https://d3js.org/d3-queue.v3.min.js" type="text/javascript" charset="utf-8"></script>
 	{# crossfilter must come before dc #}
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js" type="text/javascript" charset="utf-8"></script>
