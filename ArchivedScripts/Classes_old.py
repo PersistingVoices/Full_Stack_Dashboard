@@ -106,19 +106,3 @@ class Classy:
 		cr = Classy.template_for_sigmaX_V_PM(new, 27)
 
 		return unique_pm, P_nos, PS1, PS4, PS1vsPS4, Q1_sales, Q2_sales, Q3_sales, Q4_sales, crp, cr
-		
-# ## root1 = "C:/Python/Django_Files/Data/"
-# root = "/home/shriram/Documents/Python/work/ENV3/Django/Data/"
-# src_file1 = "full_data.csv"
-# src_file2 = "Cost_Forecasting.csv"
-# dest_file = 'Cleaned_Data.csv'
-
-# # file1 for full data
-# file1 = root + src_file1
-# # file2 to include cost forcasting 
-# file2 = root + src_file2
-# # new clean file name
-# new = root + dest_file
-# # Create your views here.
-# C = Classy()
-# C.before_upload(new)
