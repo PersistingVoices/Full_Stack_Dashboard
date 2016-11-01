@@ -1,30 +1,26 @@
 {%load static%}
 <!Doctype HTML>
-<head>Data Passed from Dashboard Function
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.min.css">
+
+<head>
 	<link rel="stylesheet" href="{% static "csViewer/css/custom.css"%}">
 </head>
 
-<body>
+<body>	
 	<div id="sec"/>
-
-	<script src="https://code.jquery.com/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8" ></script>
-	{# d3 must come before all #}
+	<div id="thir"/>
+	<script src="{% static "csViewer/lib/js/jquery-3.1.1.min.js"%}" type="text/javascript" charset="utf-8"></script>
 	<script src="{% static "csViewer/lib/js/d3.js"%}" type="text/javascript" charset="utf-8"></script>
-	<script src="{% static "csViewer/lib/js/d3fc.bundle.min.js"%}" type="text/javascript" charset="utf-8"></script>
-	<script src="https://d3js.org/d3-queue.v3.min.js" type="text/javascript" charset="utf-8"></script>
-	{# crossfilter must come before dc #}
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="{% static "csViewer/lib/js/crossfilter.min.js"%}" type="text/javascript" charset="utf-8"></script>	
 	<script src="{% static "csViewer/lib/js/dc.js"%}" type="text/javascript" charset="utf-8"></script>
-	<script src="{% static "csViewer/js/graphs.js" %}" type="text/javascript" charset="utf-8"></script>
+	<script src="{% static "csViewer/js/bar.js" %}" type="text/javascript" charset="utf-8"></script>
+
 	<script type="text/javascript" charset="utf-8">
 		$(document).ready(function() {
-			var data = {{ JsonData|safe }};
-			// var url = "{% static "csViewer/js/graphs.js" %}"
-			beautify(data);
+			var Wheredata = {{ WhereData|safe }};
+			// console.log(Wheredata);
+			var AllData = {{ AllData|safe }};
+			// console.log(AllData);
+			beautify(Wheredata, AllData);
 		});
 	</script>
 </body>
-
-{# <script src="https://cdnjs.cloudflare.com/ajax/libs/dc/1.7.5/dc.min.js" type="text/javascript" charset="utf-8"></script> #}
-	

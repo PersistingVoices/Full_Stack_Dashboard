@@ -1,10 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
   <title>Layouts &raquo; Hero Sidebar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="stylesheet" type="text/css" href="../../static/csViewer/css/custom.css" />
-<!--  <script src="../../static/csViewer/js/live.js" type="text/javascript" charset="utf-8" async defer></script>-->
+  <link rel="stylesheet" type="text/css" href="{% static "csViewer/css/custom.css" %}"/>
 </head>
 <body class="application">
 
@@ -35,19 +35,6 @@
 
   <div class="container-fluid">
     <div class="row">
-      <div class="col-sm-3">
-        <div class="chart-wrapper">
-          <div class="chart-title">
-            Cell Title
-          </div>
-          <div class="chart-stage">
-            <img data-src="holder.js/100%x650/white">
-          </div>
-          <div class="chart-notes">
-            Notes about this chart
-          </div>
-        </div>
-      </div>
       <div class="col-sm-9">
         <div class="row">
           <div class="col-sm-12">
@@ -150,22 +137,22 @@
     </div>
   </div>
 
+  <script src="{% static "csViewer/js/live.js" %}" type="text/javascript" charset="utf-8" async defer>
+  </script>
 
+  <script type="text/javascript" src="{% static "csViewer/lib/js/require.js" %}"></script>
 
-    <hr>
+  <script type="text/javascript" src="{% static "csViewer/lib/js/jquery-3.1.1.min.js" %}"></script>
+  
+  <script type="text/javascript" src="{% static "csViewer/lib/js/bootstrap.min.js" %}"></script>
 
-    <p class="small text-muted">Built with &#9829; by <a href="https://keen.io">Keen IO</a></p>
-
-  <script type="text/javascript" src="../../static/csViewer/lib/js/jquery.min.js"></script>
-  <script type="text/javascript" src="../../static/csViewer/lib/js/bootstrap.min.js"></script>
-
-  <script type="text/javascript" src="../../static/csViewer/lib/js/holder.js"></script>
+  <script type="text/javascript" src="{% static "csViewer/lib/js/holder.js" %}"></script>
   <script>
     Holder.add_theme("white", { background:"#fff", foreground:"#a7a7a7", size:10 });
   </script>
 
-  <script type="text/javascript" src="../../static/csViewer/lib/js/keen.min.js"></script>
-  <script type="text/javascript" src="../../static/csViewer/lib/js/meta.js"></script>
+  <script type="text/javascript" src="{% static "csViewer/lib/js/keen.js" %}"></script>
+  <script type="text/javascript" src="{% static "csViewer/lib/js/meta.js" s%}"></script>
 
 </body>
 </html>

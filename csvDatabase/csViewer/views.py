@@ -41,6 +41,12 @@ def dbUpload():
  			push.save()
 
 def index(request):
+	return render(request, "csViewer/template.html")
+
+def index2(request):
+	return render(request, "csViewer/dashboard.html")
+
+def upload(request):
 	C = Classy() 
 	# make new file with filled headers
 	C.writeHeader(srcFile, destFile)
@@ -52,12 +58,15 @@ def index(request):
 def dashboard(request):
 	a = []
 	C = Classy() 
-	a = C.returnCols(C1='cosType',
-		C2='cosElementNumber', 
-		C3='cosElementName', 
-		C4='ps0',
-		C5='ps2', 
-		C6='ps4',
-		C7='actual',
-		C8='commitment')
-	return render(request, "csViewer/Page2.html", {'JsonData': a})
+	# a = C.returnCols(C1='cosType',
+	# 	C2='cosElementNumber', 
+	# 	C3='cosElementName', 
+	# 	C4='ps0',
+	# 	C5='ps2', 
+	# 	C6='ps4',
+	# 	C7='actual',
+	# 	C8='commitment')
+	# a = C.returnAll()
+	a = C.selectAllWhere('cosType', 'Execution Cost')
+	b = C.returnAll()
+	return render(request, "csViewer/Page2.html", {'WhereData' : a, 'AllData' : b} )
