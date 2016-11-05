@@ -1,9 +1,13 @@
 import csv
 import sqlite3
-# from pathlib import Path
-# p = str(Path(__file__).parents[3])
-# srcFile = p + '/Data/BPSimport1.csv'
-# destFile = p + '/Data/BPSFinal.csv'
+from string import Template
+# import sqlparse as sp
+import json
+
+from pathlib import Path
+p = str(Path(__file__).parents[3])
+srcFile = p + '/Data/BPSimport1.csv'
+destFile = p + '/Data/BPSFinal.csv'
 
 headers = ['Project Number','Project Name','WBS Element','WBS Name','','Activity','Customer Number','Customer Name','Cost Type', 'Cost Element Name']
 
@@ -74,5 +78,173 @@ class Classy():
 		cur.execute(query)
 		return(cur.fetchall())
 
+	@staticmethod
+	# need a method to make fields/ array for processing waterfall graph
+	def returnNewFields(col1, col2):
+		# con = sqlite3.connect('../../db.sqlite3')
+		con = sqlite3.connect('db.sqlite3')
+		con.row_factory = Classy.dictFactory
+		cur = con.cursor()
+		query = ("""	
+
+					INSERT INTO csViewer_waterfall (start, curr, lag, base, pDiff, nDiff, fin, cosElementName)
+
+						SELECT 
+
+						0 as start,
+
+						ABS({var1}-{var2}) AS curr, 
+
+						0  as lag, 
+
+						0  as base, 
+
+						0  as pDiff, 
+
+						0  as nDiff, 
+						
+						CASE 
+							WHEN cosElementName = "Travel Cost - Visa D"
+							THEN ABS({var1}-{var2})
+						ELSE
+							0
+						END 
+						AS fin, 
+
+						cosElementName
+
+						FROM csViewer_db1
+						WHERE {colName} = "{cost}"
+						ORDER BY cosElementName
+
+						""").format(colName="cosType",
+									cost="Execution Cost",
+									var1=col1,
+									var2=col2)
+
+
+		cur.execute(query)
+
+
+		cur.execute('''
+				
+				UPDATE csViewer_waterfall
+				SET lag = (SELECT w2.curr
+							FROM csViewer_waterfall w2
+							WHERE w2.id =  csViewer_waterfall.id - 1 
+							ORDER BY w2.id ASC
+							LIMIT 1
+							)
+
+				''')
+		
+
+		cur.execute('''
+				
+				UPDATE csViewer_waterfall
+				SET lag = 0 WHERE lag IS NULL
+
+			''')
+
+		cur.execute('''
+					UPDATE csViewer_waterfall
+					SET start = (SELECT
+								CASE 
+									WHEN w2.cosElementName = "AE01/ML-03"
+									THEN w2.curr
+								ELSE
+									0
+								END
+								AS start
+								FROM csViewer_waterfall w2
+								WHERE w2.id = csViewer_waterfall.id
+								ORDER BY w2.id ASC
+								LIMIT 1)
+			''')
+		
+		cur.execute('''
+				UPDATE csViewer_waterfall
+				SET pDiff = (SELECT 
+							CASE 
+								WHEN (w2.curr - w2.lag) > 0 
+								THEN ABS(w2.curr - w2.lag)
+							ELSE
+								0
+							END
+							AS pDiff
+							FROM csViewer_waterfall w2
+							WHERE w2.id = csViewer_waterfall.id
+							ORDER BY w2.id ASC
+							LIMIT 1
+							)
+			''')
+		
+		cur.execute('''
+				UPDATE csViewer_waterfall
+				SET nDiff = (SELECT 
+							CASE 
+								WHEN (w2.curr - w2.lag) < 0 
+								THEN ABS(w2.curr - w2.lag)
+							ELSE
+								0
+							END
+							AS nDiff
+							FROM csViewer_waterfall w2
+							WHERE w2.id = csViewer_waterfall.id
+							ORDER BY w2.id ASC
+							LIMIT 1 
+							)
+			''')
+
+		cur.execute('''
+				
+				UPDATE csViewer_waterfall
+				SET base = (SELECT 
+							CASE
+								WHEN (w2.pDiff > 0) THEN (w2.curr-w2.pDiff)
+							ELSE
+								(SELECT
+								CASE
+								WHEN (w2.curr > w2.lag) THEN w2.lag
+								ELSE w2.curr 
+								END)
+							END
+							AS base
+							FROM csViewer_waterfall w2
+							WHERE w2.id = csViewer_waterfall.id
+							ORDER BY w2.id ASC
+							LIMIT 1
+							)
+			''')
+
+		cur.execute('''
+			
+				UPDATE csViewer_waterfall
+				SET base = 0, pDiff = 0, nDiff = 0 WHERE cosElementName = 'AE01/ML-03'
+
+			
+			''')
+
+		cur.execute('''
+
+				UPDATE csViewer_waterfall
+				SET base = 0 WHERE cosElementName = 'Travel Cost - Visa D'
+			
+			''')
+
+		# cur.execute("SELECT base, id, cosElementName FROM csViewer_waterfall WHERE base = 0 ")
+		# cur.execute("SELECT * FROM csViewer_waterfall WHERE cosElementName = 'Travel Cost - Visa D' ")
+		cur.execute("""DELETE FROM csViewer_waterfall WHERE rowid NOT IN 
+						(SELECT MAX(rowid) FROM csViewer_waterfall GROUP BY cosElementName)
+
+			""")
+
+		cur.execute("SELECT * FROM csViewer_waterfall")
+		return(cur.fetchall())
+
+
 # C = Classy()
-# C.writeHeader(srcFile, destFile)
+# col1 = "ps4"
+# col2 = "ps0"
+# for i in range(0, len(C.returnNewFields(col1, col2))):
+# 	print(C.returnNewFields(col1,col2)[i], '\n')

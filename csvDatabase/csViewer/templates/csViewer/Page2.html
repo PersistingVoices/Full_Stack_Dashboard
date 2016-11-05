@@ -8,6 +8,7 @@
 <body>	
 	<div id="sec"/>
 	<div id="thir"/>
+
 	<script src="{% static "csViewer/lib/js/jquery-3.1.1.min.js"%}" type="text/javascript" charset="utf-8"></script>
 	<script src="{% static "csViewer/lib/js/d3.js"%}" type="text/javascript" charset="utf-8"></script>
 	<script src="{% static "csViewer/lib/js/crossfilter.min.js"%}" type="text/javascript" charset="utf-8"></script>	
@@ -20,7 +21,9 @@
 			// console.log(Wheredata);
 			var AllData = {{ AllData|safe }};
 			// console.log(AllData);
-			beautify(Wheredata, AllData);
+			var waterfallData = {{ waterfall|safe }};
+
+			beautify(Wheredata, AllData, waterfallData);
 		});
 	</script>
 </body>

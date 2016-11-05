@@ -32,7 +32,9 @@ def dbUpload():
 				cosElementNumber = line[9],
 				cosElementName = line[10],
 				ps0 = float(line[12]),
-				ps2 = float(line[13]),
+				ps1 = float(line[13]),
+				ps2 = float(line[14]),
+				ps3 = float(line[15]),
 				ps4 = float(line[16]),
 				actual = float(line[17]),
 				commitment = float(line[18]),
@@ -40,13 +42,8 @@ def dbUpload():
 				)
  			push.save()
 
+
 def index(request):
-	return render(request, "csViewer/template.html")
-
-def index2(request):
-	return render(request, "csViewer/dashboard.html")
-
-def upload(request):
 	C = Classy() 
 	# make new file with filled headers
 	C.writeHeader(srcFile, destFile)
@@ -58,7 +55,12 @@ def upload(request):
 def dashboard(request):
 	a = []
 	C = Classy() 
-	# a = C.returnCols(C1='cosType',
+	a = C.selectAllWhere('cosType', 'Execution Cost')
+	b = C.returnAll()
+	c = C.returnNewFields("ps4", "ps0")
+	return render(request, "csViewer/template.html", {'WhereData' : a, 'AllData' : b, 'waterfall' : c})
+
+# a = C.returnCols(C1='cosType',
 	# 	C2='cosElementNumber', 
 	# 	C3='cosElementName', 
 	# 	C4='ps0',
@@ -67,6 +69,4 @@ def dashboard(request):
 	# 	C7='actual',
 	# 	C8='commitment')
 	# a = C.returnAll()
-	a = C.selectAllWhere('cosType', 'Execution Cost')
-	b = C.returnAll()
-	return render(request, "csViewer/Page2.html", {'WhereData' : a, 'AllData' : b} )
+	

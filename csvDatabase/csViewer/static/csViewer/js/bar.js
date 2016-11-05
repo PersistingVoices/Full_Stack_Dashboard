@@ -1,17 +1,34 @@
-function beautify(Wheredata, AllData) {
+function beautify(Wheredata, AllData, waterfallData) {
 	// make crossfilter references and dimensions
-	var ndx = crossfilter(Wheredata);
+	var ndx = crossfilter(AllData);
+	var ndy = crossfilter(waterfallData);
+
+	var ps0 = ndx.dimension(function(d){ return d.cosElementName; });
+	var ps1 = ndx.dimension(function(d){ return d.cosElementName; });
+	var ps2 = ndx.dimension(function(d){ return d.cosElementName; });
+	var ps3 = ndx.dimension(function(d){ return d.cosElementName; });
+	var ps4 = ndx.dimension(function(d){ return d.cosElementName; });
 	
-	var ps0 = ndx.dimension(function(d){ return d.cosElementName;});
-	var ps2 = ndx.dimension(function(d){ return d.cosElementName;});
-	var ps4 = ndx.dimension(function(d){ return d.cosElementName;});
+	var ps0Grp = ps0.group().reduceSum(function(d){ return d.ps0; });
+	var ps1Grp = ps1.group().reduceSum(function(d){ return d.ps1; });
+	var ps2Grp = ps2.group().reduceSum(function(d){ return d.ps2; });
+	var ps3Grp = ps3.group().reduceSum(function(d){ return d.ps3; });
+	var ps4Grp = ps4.group().reduceSum(function(d){ return d.ps4; });
 	
-	var ps0Grp = ps0.group().reduceSum(function(d){return d.ps0;});
-	var ps2Grp = ps2.group().reduceSum(function(d){return d.ps2;});
-	var ps4Grp = ps4.group().reduceSum(function(d){return d.ps4;});
-	
-	var margin = {top:50, right:50, bottom:50, left:50}, 
-		width = 700 - margin.left - margin.right, 
+	var start = ndy.dimension(function(d){ return d.cosElementName;})
+	var pDiff = ndy.dimension(function(d){ return d.cosElementName; });
+	var nDiff = ndy.dimension(function(d){ return d.cosElementName; });
+	var base = ndy.dimension(function(d){ return d.cosElementName; });
+	var fin = ndy.dimension(function(d){ return d.cosElementName; });
+	// fin as well later
+	var startGrp = start.group().reduceSum(function(d) { return d.start; });
+	var pDiffGrp = pDiff.group().reduceSum(function(d){ return d.pDiff; });
+	var nDiffGrp = nDiff.group().reduceSum(function(d){ return d.nDiff; }); 
+	var baseGrp = base.group().reduceSum(function(d){ return d.base; });
+	var finGrp = fin.group().reduceSum(function(d){ return	d.fin; });
+
+	var margin = {top:5, right:5, bottom:5, left:5}, 
+		width = document.getElementById("ti").offsetWidth - 50; 
 		height = 300 -margin.top - margin.bottom;
 	
 	var x = d3.scale.linear()
@@ -45,29 +62,11 @@ function beautify(Wheredata, AllData) {
 				.yAxisLabel('', 50)
 				.on('pretransition', function(chart){ 
 					chart.selectAll('g.x text')
-					.attr('transform', 'translate(-10) rotate(300)')
-					.attr('style', 'text-anchor:end');
+						.attr('transform', 'translate(-10) rotate(300)')
+						.attr('style', 'text-anchor:end');
 				});
 	
 	var thir =	dc.barChart('#thir')
-					.width(width)
-					.height(height)
-					.dimension(ps4)
-					.group(ps4Grp)
-					.x(ordinalScale)
-					.y(y)
-					.xUnits(dc.units.ordinal)
-					.brushOn(true)
-					.elasticY(true)
-					.elasticX(true)
-					.yAxisLabel('', 50)
-					.on('pretransition', function(chart){ 
-						chart.selectAll('g.x text')
-						.attr('transform', 'translate(-10) rotate(300)')
-						.attr('style', 'text-anchor:end');
-					});
-
-	var fou =	dc.barChart('#fou')
 					.width(width)
 					.height(height)
 					.dimension(ps2)
@@ -81,35 +80,86 @@ function beautify(Wheredata, AllData) {
 					.yAxisLabel('', 50)
 					.on('pretransition', function(chart){ 
 						chart.selectAll('g.x text')
-						.attr('transform', 'translate(-10) rotate(300)')
-						.attr('style', 'text-anchor:end');
+							.attr('transform', 'translate(-10) rotate(300)')
+							.attr('style', 'text-anchor:end');
+					});
+
+	var fou =	dc.barChart('#fou')
+					.width(width)
+					.height(height)
+					.dimension(ps4)
+					.group(ps4Grp)
+					.x(ordinalScale)
+					.y(y)
+					.xUnits(dc.units.ordinal)
+					.brushOn(true)
+					.elasticY(true)
+					.elasticX(true)
+					.yAxisLabel('', 50)
+					.on('pretransition', function(chart){ 
+						chart.selectAll('g.x text')
+							.attr('transform', 'translate(-10) rotate(300)')
+							.attr('style', 'text-anchor:end');
+					});
+
+	var fiv =	dc.barChart('#fiv')
+					.width(width)
+					.height(height)
+					.dimension(ps1)
+					.group(ps1Grp)
+					.x(ordinalScale)
+					.y(y)
+					.xUnits(dc.units.ordinal)
+					.brushOn(true)
+					.elasticY(true)
+					.elasticX(true)
+					.yAxisLabel('', 50)
+					.on('pretransition', function(chart){ 
+						chart.selectAll('g.x text')
+							.attr('transform', 'translate(-10) rotate(300)')
+							.attr('style', 'text-anchor:end');
+					});
+
+	var six =	dc.barChart('#six')
+					.width(width)
+					.height(height)
+					.dimension(ps3)
+					.group(ps3Grp)
+					.x(ordinalScale)
+					.y(y)
+					.xUnits(dc.units.ordinal)
+					.brushOn(true)
+					.elasticY(true)
+					.elasticX(true)
+					.yAxisLabel('', 50)
+					.on('pretransition', function(chart){ 
+						chart.selectAll('g.x text')
+							.attr('transform', 'translate(-10) rotate(300)')
+							.attr('style', 'text-anchor:end');
+					});
+	width = document.getElementById("ti").offsetWidth * 1.225;
+	// console.log(width)6
+	var waterfall = dc.barChart('#wtr')
+						.width(width)
+						.height(height)
+						.dimension(base)
+						.group(baseGrp)
+						.stack(startGrp)
+						.stack(finGrp)
+						.stack(pDiffGrp)
+						.stack(nDiffGrp)
+						.x(ordinalScale)
+						.y(y)
+						.xUnits(dc.units.ordinal)
+						.brushOn(true)
+						.elasticX(true)
+						.elasticY(true)
+						.yAxisLabel('', 50)
+						.on('pretransition', function(chart){ 
+							chart.selectAll('g.x text')
+								.attr('transform', 'translate(-10) rotate(300)')
+								.attr('style', 'text-anchor:end');
 					});
 
 	dc.renderAll();
 };
-
-
-
-	// sec.on('pretransition', function(chart){
-	// 	chart.selectAll('g.x text')
-	// 	.attr('transform', 'translate(-10) rotate(300)')
-	// 	.attr('style', 'text-anchor:end');
-	// });
-		// chart.selectAll('g.x')
-		// .append('text')
-		// .attr('class', 'x-axis-label')
-		// .attr('text-anchor', 'middle')
-		// .attr('x', (width-150)/2)
-		// .attr('y', (height+50)/2)
-		// .text('X axis');
-// });
-	
-	// 	chart.selectAll('g.y')
-	// 	.append('text')
-	// 	.attr('class', 'y-axis-label')
-	// 	.attr('text-anchor', 'middle')
-	// 	.attr('y', (height-50)/2)
-	// 	.attr('x', -100)
-	// 	.text('Y axis');
-
-	// });
